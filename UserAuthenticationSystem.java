@@ -1,17 +1,19 @@
 package jobSearchAndApplicationManagementSystem;
 import java.io.*;
 import java.util.*;
+
 public class UserAuthenticationSystem {
     private static List<User> users = new ArrayList<>();
     private static String userFilePath = "users.txt";
+
     public static void main(String[] args) {
         loginMenu();
     }
-    
+
     private static void loginMenu() {
-    	loadUsers();
+        loadUsers();
         Scanner scanner = new Scanner(System.in);
-        
+
         System.out.println("1. Login");
         System.out.println("2. Signup");
         System.out.println("3. Exit");
@@ -35,9 +37,9 @@ public class UserAuthenticationSystem {
                 loginMenu();
         }
     }
-    
+
     private static void login(Scanner scanner) {
-    	Menu menu = new Menu();
+        Menu menu = new Menu();
         System.out.print("Enter your username: ");
         String username = scanner.nextLine();
         System.out.print("Enter your password: ");
@@ -51,11 +53,11 @@ public class UserAuthenticationSystem {
             System.out.println("Invalid username or password. Please try again.");
             System.out.print("Do you want to try again? (Y/N): ");
             String tryAgain = scanner.nextLine();
-            if(tryAgain.equalsIgnoreCase("Y")) {
-            	login(scanner);
+            if (tryAgain.equalsIgnoreCase("Y")) {
+                login(scanner);
             }
             if (tryAgain.equalsIgnoreCase("N")) {
-            	loginMenu();
+                loginMenu();
             }
         }
     }
@@ -72,13 +74,47 @@ public class UserAuthenticationSystem {
     private static void signup(Scanner scanner) {
         System.out.print("Enter your username: ");
         String username = scanner.nextLine();
+
+        if (isUsernameTaken(username)) {
+            System.out.println("Username already exists. Please choose a different one.");
+            signup(scanner);
+            return;
+        }
+
         System.out.print("Enter your password: ");
         String password = scanner.nextLine();
 
-        users.add(new User(username, password));
+        // Collect additional user information
+        System.out.print("Enter your full name: ");
+        String fullName = scanner.nextLine();
+        System.out.print("Enter your date of birth: ");
+        String dateOfBirth = scanner.nextLine();
+        System.out.print("Enter your institute: ");
+        String institute = scanner.nextLine();
+        System.out.print("Enter your degree: ");
+        String degree = scanner.nextLine();
+        System.out.print("Enter your CGPA: ");
+        String cgpa = scanner.nextLine();
+        System.out.print("Enter your phone number: ");
+        String phoneNumber = scanner.nextLine();
+        System.out.print("Enter your email: ");
+        String email = scanner.nextLine();
+        System.out.print("Enter your address: ");
+        String address = scanner.nextLine();
+
+        users.add(new User(username, password, fullName, dateOfBirth, institute, degree, cgpa, phoneNumber, email, address));
         saveUsers();
         System.out.println("Signup successful. Welcome!");
         // Add your menu for the newly signed up user here.
+    }
+
+    private static boolean isUsernameTaken(String username) {
+        for (User user : users) {
+            if (user.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void loadUsers() {
@@ -86,10 +122,19 @@ public class UserAuthenticationSystem {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 2) {
+                if (parts.length >= 10) {
                     String username = parts[0];
                     String password = parts[1];
-                    users.add(new User(username, password));
+                    String fullName = parts[2];
+                    String dateOfBirth = parts[3];
+                    String institute = parts[4];
+                    String degree = parts[5];
+                    String cgpa = parts[6];
+                    String phoneNumber = parts[7];
+                    String email = parts[8];
+                    String address = parts[9];
+
+                    users.add(new User(username, password, fullName, dateOfBirth, institute, degree, cgpa, phoneNumber, email, address));
                 }
             }
         } catch (IOException e) {
@@ -100,7 +145,9 @@ public class UserAuthenticationSystem {
     private static void saveUsers() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(userFilePath))) {
             for (User user : users) {
-                writer.write(user.getUsername() + "," + user.getPassword());
+                writer.write(user.getUsername() + "," + user.getPassword() + "," + user.getFullName() + ","
+                        + user.getDateOfBirth() + "," + user.getInstitute() + "," + user.getDegree() + ","
+                        + user.getCgpa() + "," + user.getPhoneNumber() + "," + user.getEmail() + "," + user.getAddress());
                 writer.newLine();
             }
         } catch (IOException e) {
