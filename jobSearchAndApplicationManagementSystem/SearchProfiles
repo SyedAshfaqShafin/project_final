@@ -1,0 +1,86 @@
+package jobSearchAndApplicationManagementSystem;
+//Syed Ashfaq Shafin
+//ID- 2312845042
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class SearchProfiles {
+    private List<String> profileData = new ArrayList<>();
+
+    public static void main(String[] args) {
+        SearchProfiles profileSearch = new SearchProfiles();
+        profileSearch.loadProfileData("profile_data.txt");
+        profileSearch.searchProfiles();
+    }
+
+    private void loadProfileData(String filename) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                profileData.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void searchProfiles() {
+        try (Scanner scanner = new Scanner(System.in)) {
+			while (true) {
+			    System.out.print("Enter a keyword to search for a profile: ");
+			    String keyword = scanner.nextLine().trim().toLowerCase();
+
+			    List<Integer> matchingProfileIndices = new ArrayList<>();
+
+			    for (int i = 0; i < profileData.size(); i++) {
+			        String profile = profileData.get(i).toLowerCase();
+			        if (profile.contains(keyword)) {
+			            matchingProfileIndices.add(i);
+			        }
+			    }
+
+			    if (matchingProfileIndices.isEmpty()) {
+			        System.out.println("No matching profiles found.");
+			    } else {
+			        System.out.println("Matching Profiles:");
+			        for (int i = 0; i < matchingProfileIndices.size(); i++) {
+			            int profileIndex = matchingProfileIndices.get(i);
+			            String profile = profileData.get(profileIndex);
+			            int displayNumber = i + 1;
+			            System.out.println(displayNumber + ". " + profile);
+			        }
+
+			        System.out.print("Enter the number of the profile you want to view or 0 to exit: ");
+			        int choice = scanner.nextInt();
+			        if (choice >= 1 && choice <= matchingProfileIndices.size()) {
+			            viewProfile(matchingProfileIndices.get(choice - 1));
+			        } else if (choice == 0) {
+			            break;
+			        } else {
+			            System.out.println("Invalid choice. Please try again.");
+			        }
+			    }
+			}
+		}
+    }
+
+    private void viewProfile(int profileIndex) {
+        String profile = profileData.get(profileIndex);
+        System.out.println("Profile Information:");
+        System.out.println(profile);
+
+        try (Scanner scanner = new Scanner(System.in)) {
+			System.out.print("Enter 0 to go back to the search results or 1 to search again: ");
+			int choice = scanner.nextInt();
+
+			if (choice == 1) {
+			    searchProfiles();
+			}
+		}
+    }
+}
